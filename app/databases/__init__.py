@@ -3,6 +3,8 @@ from dotenv import load_dotenv
 import os
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+
+
 load_dotenv()
 
 SQL_URL = os.getenv("SQL_ENGINE_URI")

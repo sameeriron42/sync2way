@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
-from databases.models import CustomerCatalog
+from databases.schemas import CustomerCatalog
 from routers.models import Customer
+
 
 def get_users(db: Session):
     return db.query(CustomerCatalog).offset(0).limit(10).all()
