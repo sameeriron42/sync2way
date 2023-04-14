@@ -7,3 +7,6 @@ class Customer(BaseModel):
 
     class Config:
         orm_mode = True
+
+class CustomerEmail(BaseModel):
+    email: str
