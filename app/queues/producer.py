@@ -1,18 +1,18 @@
 import pika
-from routers import models
+import json
 
-def publish_to_queue(record: models.Customer):
+def publish_to_queue(msg: dict):
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
     channel = connection.channel()
-    channel.queue_declare(queue='tst')
-    msg= record.json()
+    channel.queue_declare(queue='test',durable=True)
+    msg_str = json.dumps(msg) 
     channel.basic_publish(exchange='',
-                          routing_key='tst',
-                          body=msg,    
+                          routing_key='test',
+                          body=msg_str,    
                           properties=pika.BasicProperties(
         delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE
     ))
 
     print('msg sent to queue')
-    print(msg)
+    print(msg_str)
     connection.close()

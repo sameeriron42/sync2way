@@ -20,7 +20,8 @@ async def createCustomer(customer : models.Customer,db:Session = Depends(get_db)
         raise HTTPException(status_code=400, detail="Email already registered")
     record = db_utils.create_user(db=db,customer=customer)
     record = models.Customer.from_orm(record)
-    publish_to_queue(record)
+    msg = {"type": "create", "data": record.dict()}
+    publish_to_queue(msg)
     return record
 
 @router.put("/customers/{email}", response_model=str)
@@ -28,10 +29,12 @@ async def updateCustomer(email:str, customer: models.Customer, db: Session = Dep
     db_customer = db_utils.get_user_by_email(db, email=email)
     if db_customer==None:
         raise HTTPException(status_code=400, detail="Customer with Email does not exist")
-    db_customer = db_utils.get_user_by_email(db,email=customer.email)
 
     no_of_records = db_utils.update_user(db=db,email=email,customer=customer)
+    msg = {"type": "update", "data": customer.dict(),"email": email}
+    publish_to_queue(msg)
     raise HTTPException(status_code=200,detail=f'updated {no_of_records} records successfully')
+    
 
 
 @router.delete("/customers/{email}",response_model=str)
@@ -40,5 +43,7 @@ async def deleteCustomer(email:str,db:Session = Depends(get_db)):
     if db_customer==None:
         raise HTTPException(status_code=400, detail="No Deletion,Customer with Email does not exist")
     no_of_records = db_utils.delete_user(db,email)
+    msg = {"type": "delete","email": email}
+    publish_to_queue(msg)
     raise HTTPException(status_code=200,detail=f'Deleted {no_of_records} records successfully')
  
