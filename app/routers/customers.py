@@ -14,36 +14,39 @@ async def getAllCustomers(db:Session = Depends(get_db)):
     return db_utils.get_users(db=db)
 
 @router.post("/customers", response_model=models.Customer)
-async def createCustomer(customer : models.Customer,db:Session = Depends(get_db)):
+async def createCustomer(customer : models.Customer,db:Session = Depends(get_db),origin: str='local'):
     db_customer = db_utils.get_user_by_email(db, email=customer.email)
     if db_customer:
         raise HTTPException(status_code=400, detail="Email already registered")
     record = db_utils.create_user(db=db,customer=customer)
     record = models.Customer.from_orm(record)
     msg = {"type": "create", "data": record.dict()}
-    publish_to_queue(msg)
+    if origin!='webhook':
+        publish_to_queue(msg)
     return record
 
 @router.put("/customers/{email}", response_model=str)
-async def updateCustomer(email:str, customer: models.Customer, db: Session = Depends(get_db)):
+async def updateCustomer(email:str, customer: models.Customer, db: Session = Depends(get_db),origin:str='local'):
     db_customer = db_utils.get_user_by_email(db, email=email)
     if db_customer==None:
         raise HTTPException(status_code=400, detail="Customer with Email does not exist")
 
     no_of_records = db_utils.update_user(db=db,email=email,customer=customer)
     msg = {"type": "update", "data": customer.dict(),"email": email}
-    publish_to_queue(msg)
+    if origin!='webhook':
+        publish_to_queue(msg)
     raise HTTPException(status_code=200,detail=f'updated {no_of_records} records successfully')
     
 
 
 @router.delete("/customers/{email}",response_model=str)
-async def deleteCustomer(email:str,db:Session = Depends(get_db)):
+async def deleteCustomer(email:str,db:Session = Depends(get_db),origin:str = 'local'):
     db_customer = db_utils.get_user_by_email(db, email=email)
     if db_customer==None:
         raise HTTPException(status_code=400, detail="No Deletion,Customer with Email does not exist")
     no_of_records = db_utils.delete_user(db,email)
     msg = {"type": "delete","email": email}
-    publish_to_queue(msg)
+    if origin!='webhook':
+        publish_to_queue(msg)
     raise HTTPException(status_code=200,detail=f'Deleted {no_of_records} records successfully')
  
