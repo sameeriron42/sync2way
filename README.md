@@ -43,11 +43,16 @@ Install dependencies
   pip install -r requirements.txt
 ```
 
-set PYTHONPATH environment variable for modules imports
- 
+Set PYTHONPATH environment variable for modules imports
+
+**For UNIX (Linux, OSX, ...)**
+```bash
+export PYTHONPATH="${PYTHONPATH}:/path/to/your/project/app"
 ```
-  export PYTHONPATH="${PYTHONPATH}:/path/to/your/project/"
-```
+**For Windows**
+```bash
+set PYTHONPATH=%PYTHONPATH%;C:<\path\to\your\project\>\app
+ ```
 
 - start mysql daemon
 - start RabbitMQ service
