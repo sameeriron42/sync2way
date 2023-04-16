@@ -14,6 +14,16 @@ python | rabbitmq | fastapi | mysql
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/1200px-Python-logo-notext.svg.png" width=250 height=200> | <img src="https://pbs.twimg.com/profile_images/1223261138059780097/eH73w5lN_400x400.jpg" width=250 height=200> | <img src="https://pbs.twimg.com/profile_images/1417542931209199621/fWMEIB5j_400x400.jpg" width=250 height=200> | <img src="https://cdn-icons-png.flaticon.com/512/5968/5968313.png" width=250 height=200>
 
 
+### How would you go about adding second integration like salesforce?
+- All we need to do is extend the functionality of worker that we wrote for stripe integration.
+- So that when a message is received the worker makes respective api call to both stripe and salesforce with their respective SDK's.
+- But a better design would be to add seperate worker for salesforce and let the message queue work in Pub/Sub fashion.
+![](pub-sub-model.png)
+- we can acheive this by using `fanout` option in rabbitMQ. So that all the workers that we binded to particular exchange get to work on same msg received in queue. Apache Kafka is a well suited solution for this type of model.
+- This will take care of the outward sync part. For the inward sync instead of having single `/webhook` endpoint.
+- We will define two seperate routes `/webhook/stripe` and `/webhook/salesforce`. Add these routes in respective service dashboard when we create new webhook trigger.
+
+
 ## Environment Variables
 
 To run this project, you will need to add the following environment variables to your .env file
