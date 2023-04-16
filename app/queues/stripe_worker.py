@@ -23,8 +23,10 @@ def updateCustomer(ch,method,body: dict):
         #     return
     
         # customer_id = response['data'][0]["id"]
+        response = stripe.Customer.list(email=email)
+        customer_id = response['data'][0]['id']
         new_data = body["data"]
-        stripe.Customer.modify('cus_NiT14JDv9NLr3K',name=new_data['name'])
+        stripe.Customer.modify(customer_id,name=new_data['name'])
         ch.basic_ack(delivery_tag=method.delivery_tag)
         print(f"Updated Stripe Customer with email {email}")
     except stripe.error.InvalidRequestError as e:
@@ -40,8 +42,10 @@ def deleteCustomer(ch,method,body:dict):
     #     return
     
     # customer_id = response['data'][0]["id"]
+    response = stripe.Customer.list(email=email)
+    customer_id = response['data'][0]['id']
     try:
-        stripe.Customer.delete('cus_NiT14JDv9NLr3K')
+        stripe.Customer.delete(customer_id)
         ch.basic_ack(delivery_tag=method.delivery_tag)
         print(f"Deleted Stripe Customer with email {email}")
     except stripe.error.InvalidRequestError as e:
