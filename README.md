@@ -11,7 +11,7 @@ customer catalog in an external service - Stripe in this case.
 
 python | rabbitmq | fastapi | mysql
 :-------------------------:|:-------------------------: | :---: | :---:
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/1200px-Python-logo-notext.svg.png" width=250 height=250> | <img src="https://pbs.twimg.com/profile_images/1223261138059780097/eH73w5lN_400x400.jpg" width=250 height=250> | <img src="https://pbs.twimg.com/profile_images/1417542931209199621/fWMEIB5j_400x400.jpg" width=250 height=250> | <img src="https://cdn-icons-png.flaticon.com/512/5968/5968313.png" width=250 height=250>
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/1200px-Python-logo-notext.svg.png" width=250 height=200> | <img src="https://pbs.twimg.com/profile_images/1223261138059780097/eH73w5lN_400x400.jpg" width=250 height=200> | <img src="https://pbs.twimg.com/profile_images/1417542931209199621/fWMEIB5j_400x400.jpg" width=250 height=200> | <img src="https://cdn-icons-png.flaticon.com/512/5968/5968313.png" width=250 height=200>
 
 
 ## Environment Variables
