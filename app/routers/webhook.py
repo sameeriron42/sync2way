@@ -1,4 +1,4 @@
-from fastapi import FastAPI,HTTPException,Request,Depends
+from fastapi import APIRouter,FastAPI,HTTPException,Request,Depends
 from dotenv import load_dotenv
 from sqlalchemy.orm import Session
 import os,sys
@@ -7,13 +7,12 @@ import routers.customers as customer_router
 from routers import models,dependency
 
 load_dotenv()
-sys.path.append('../')
 stripe.api_key = os.getenv("STRIPE_RESTRICTED_KEY")
 endpoint_secret = os.getenv("WEBHOOK_SECRET")
 
-app = FastAPI()
+router = APIRouter()
 
-@app.post("/webhook")
+@router.post("/webhook")
 async def webhook(request: Request, db: Session = Depends(dependency.get_db)):
     event = None
     payload = await request.body()
