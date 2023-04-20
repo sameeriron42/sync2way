@@ -3,10 +3,21 @@ import stripe
 from dotenv import load_dotenv
 import os
 import json
+import pickle
+from routers.dependency import customer_list 
 
 def createNewCustomer(ch,method,body: dict):
     try:
-        stripe.Customer.create(name=body["name"],email=body["email"],metadata={"id":body["id"]})
+        response = stripe.Customer.create(name=body["name"],email=body["email"],metadata={"id":body["id"]})
+        customer_id = response['id']
+
+        fp = open("../shared.pkl","rb+")
+        customer_list = pickle.load(fp)
+        customer_list.append(customer_id)
+        fp.seek(0)
+        pickle.dump(customer_list,fp)
+        fp.close()
+
         ch.basic_ack(delivery_tag=method.delivery_tag)
         print("Created new stripe customer")
     except stripe.error.InvalidRequestError as e:
@@ -25,6 +36,14 @@ def updateCustomer(ch,method,body: dict):
         # customer_id = response['data'][0]["id"]
         response = stripe.Customer.list(email=email)
         customer_id = response['data'][0]['id']
+
+        fp = open("../shared.pkl","rb+")
+        customer_list = pickle.load(fp)
+        customer_list.append(customer_id)
+        fp.seek(0)
+        pickle.dump(customer_list,fp)
+        fp.close()
+
         new_data = body["data"]
         stripe.Customer.modify(customer_id,name=new_data['name'])
         ch.basic_ack(delivery_tag=method.delivery_tag)
@@ -44,6 +63,14 @@ def deleteCustomer(ch,method,body:dict):
     # customer_id = response['data'][0]["id"]
     response = stripe.Customer.list(email=email)
     customer_id = response['data'][0]['id']
+    
+    fp = open("../shared.pkl","rb+")
+    customer_list = pickle.load(fp)
+    customer_list.append(customer_id)
+    fp.seek(0)
+    pickle.dump(customer_list,fp)
+    fp.close()
+
     try:
         stripe.Customer.delete(customer_id)
         ch.basic_ack(delivery_tag=method.delivery_tag)
@@ -74,6 +101,11 @@ stripe.api_key = os.getenv('STRIPE_RESTRICTED_KEY')
 connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 channel = connection.channel()
 channel.queue_declare('test',durable=True)
+
+customer_list = []
+fp = open("../shared.pkl","wb+")
+pickle.dump(customer_list,fp)
+fp.close()
 
 channel.basic_consume(queue='test',on_message_callback= handleMsg)
 print('starting to consume...')

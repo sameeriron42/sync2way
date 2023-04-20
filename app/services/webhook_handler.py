@@ -4,7 +4,7 @@ from routers import models
 from dotenv import load_dotenv
 from services import customer_handler
 import stripe
-import customer_handler
+import pickle
 import os
 import stripe
 
@@ -29,6 +29,19 @@ async def stripeWebhook(request: Request,db_instance:Session):
         # Invalid signature
         print(e)
         return HTTPException(403,detail=e)
+
+    #check if hook originated from worker of queue
+    stripe_customer_id= event['data']['object']['id']
+    fp = open("shared.pkl","rb+")
+    customer_list = pickle.load(fp)
+    if stripe_customer_id in customer_list:
+       fp.seek(0)
+       customer_list.remove(stripe_customer_id)
+       pickle.dump(customer_list,fp)
+       fp.close()
+       raise HTTPException(status_code=200,detail=f'No updates,popped from list')   
+
+    fp.close()
 
     # Handle the event
     if event['type'] == 'customer.created':
