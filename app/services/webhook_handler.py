@@ -2,6 +2,7 @@ from fastapi import HTTPException,Request
 from sqlalchemy.orm import Session
 from routers import models
 from dotenv import load_dotenv
+from services import customer_handler
 import stripe
 import customer_handler
 import os
@@ -23,29 +24,31 @@ async def stripeWebhook(request: Request,db_instance:Session):
     except ValueError as e:
         # Invalid payload
         print(e)
-        raise e
+        return HTTPException(403,detail=e)
     except stripe.error.SignatureVerificationError as e:
         # Invalid signature
         print(e)
-        raise e
+        return HTTPException(403,detail=e)
 
     # Handle the event
     if event['type'] == 'customer.created':
       stripe_customer = event['data']['object']
       customer = models.Customer(name=stripe_customer["name"],email=stripe_customer["email"])
-      await customer_handler.createCustomer(customer=customer,db=db_instance,webhook=True)
+      customer_handler.createCustomer(customer,db_instance,webhook=True)
 
     elif event['type'] == 'customer.deleted':
       stripe_customer = event['data']['object']
-      await customer_handler.deleteCustomer(stripe_customer["email"],db=db_instance,webhook=True)
+      customer_handler.deleteCustomer(stripe_customer["email"],db_instance,webhook=True)
 
     elif event['type'] == 'customer.updated':
       stripe_customer = event['data']['object']
       customer = models.Customer(name=stripe_customer["name"],email=stripe_customer["email"])
-      await customer_handler.updateCustomer(email=stripe_customer["email"],customer=customer,db=db_instance,webhook=True)
+      customer_handler.updateCustomer(stripe_customer["email"],customer,db_instance,webhook=True)
       
     else:
       raise HTTPException(status_code=404,detail=f'Invalid event type: {event["type"]}')   
 
-    return 200
+    
+    raise HTTPException(status_code=200,detail=f'success')   
+
 

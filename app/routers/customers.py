@@ -23,11 +23,11 @@ async def get_customer_by_email(email,db:Session= Depends(get_db)):
 async def create_customer(customer : models.Customer,db:Session = Depends(get_db)):
     return customer_handler.createCustomer(customer,db)
 
-@router.put("/customers/{email}", response_model=HTTPException)
+@router.put("/customers/{email}", response_class=HTTPException)
 async def update_customer(email:str, customer: models.Customer, db: Session = Depends(get_db)):
-    return customer_handler.updateCustomer(email,customer,db)
+    return await customer_handler.updateCustomer(email,customer,db)
 
 
-@router.delete("/customers/{email}",response_model=HTTPException)
+@router.delete("/customers/{email}",response_class=HTTPException)
 async def delete_customer(email:str,db:Session = Depends(get_db)):
-    return customer_handler.deleteCustomer(email,db)
+    return await customer_handler.deleteCustomer(email,db)
