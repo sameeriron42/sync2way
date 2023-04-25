@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 import os
 import json
 import pickle
-from routers.dependency import customer_list 
 
 def createNewCustomer(ch,method,body: dict):
     try:

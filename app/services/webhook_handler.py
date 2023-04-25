@@ -1,12 +1,11 @@
 from fastapi import HTTPException,Request
 from sqlalchemy.orm import Session
-from routers import models
+from app import models
 from dotenv import load_dotenv
-from services import customer_handler
+from app.services import customer_handler
 import stripe
 import pickle
 import os
-import stripe
 
 
 load_dotenv()
@@ -24,11 +23,11 @@ async def stripeWebhook(request: Request,db_instance:Session):
     except ValueError as e:
         # Invalid payload
         print(e)
-        return HTTPException(403,detail=e)
+        raise HTTPException(403,detail=e)
     except stripe.error.SignatureVerificationError as e:
         # Invalid signature
         print(e)
-        return HTTPException(403,detail=e)
+        raise HTTPException(403,detail=e)
 
     #check if hook originated from worker of queue
     stripe_customer_id= event['data']['object']['id']

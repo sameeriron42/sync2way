@@ -1,8 +1,8 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from routers import models 
-from databases import db_utils
-from queues.producer import publish_to_queue
+from app import models 
+from app.databases import db_utils
+from app.queues.producer import publish_to_queue
 
 
 def getAllCustomers(db_instance:Session):
