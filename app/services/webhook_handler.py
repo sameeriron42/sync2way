@@ -1,18 +1,14 @@
 from fastapi import HTTPException,Request
 from sqlalchemy.orm import Session
 from app import models
-from dotenv import load_dotenv
 from app.services import customer_handler
 import stripe
 import pickle
-import os
 
-
-load_dotenv()
-stripe.api_key = os.getenv("STRIPE_RESTRICTED_KEY")
-endpoint_secret = os.getenv("WEBHOOK_SECRET")
 
 async def stripeWebhook(request: Request,db_instance:Session):
+    stripe.api_key = request.app.config.stripe_restricted_key
+    endpoint_secret = request.app.config.endpoint_secret
     event = None
     payload = await request.body()
     sig_header = request.headers.get('STRIPE-SIGNATURE')
