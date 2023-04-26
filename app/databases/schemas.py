@@ -1,4 +1,4 @@
-from sqlalchemy import Column,Integer,Text
+from sqlalchemy import Column,Integer,Text,BigInteger,Float
 from . import Base
 
 class CustomerCatalog(Base):
@@ -8,3 +8,9 @@ class CustomerCatalog(Base):
     name = Column(Text)
     email = Column(Text)
 
+class InvoiceCatalog(Base):
+    __tablename__ = 'invoice_catalog'
+    id = Column(Integer,primary_key=True,autoincrement=True)
+    bill_no = Column(BigInteger,unique=True)
+    amount = Column(Float)
+    pass

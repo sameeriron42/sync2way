@@ -5,6 +5,7 @@ def publish_to_queue(msg: dict):
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
     channel = connection.channel()
     channel.queue_declare(queue='test',durable=True)
+    
     msg_str = json.dumps(msg) 
     channel.basic_publish(exchange='',
                           routing_key='test',

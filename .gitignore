@@ -1,4 +1,6 @@
 process-flow.excalidraw
+shared.pkl
+todos.txt
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
