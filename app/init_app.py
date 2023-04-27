@@ -3,7 +3,7 @@ from config import getConfig,Settings
 from app.databases import create_db_session,get_sql_engine, schemas 
 
 
-def create_app(app_type:str):
+def create_app(app_type:str= "customer"):
     app = FastAPI()
     config = getConfig(app_type)
     app.config= config
