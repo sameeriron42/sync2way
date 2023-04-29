@@ -1,4 +1,4 @@
-process-flow.excalidraw
+*.excalidraw
 shared.pkl
 todos.txt
 # Byte-compiled / optimized / DLL files
