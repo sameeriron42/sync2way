@@ -10,7 +10,7 @@ class Settings(BaseSettings):
         env_file = 'app/.env'
 
 class CustomerConfig(Settings):
-    tablename:str
+    tablename:str = "customer"
     queue:str = "customer"
 
 class InvoiceConfig(Settings):
