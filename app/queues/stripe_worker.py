@@ -99,13 +99,13 @@ load_dotenv()
 stripe.api_key = os.getenv('STRIPE_RESTRICTED_KEY')
 connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 channel = connection.channel()
-channel.queue_declare('test',durable=True)
+channel.queue_declare('customer',durable=True)
 
 customer_list = []
 fp = open("../shared.pkl","wb+")
 pickle.dump(customer_list,fp)
 fp.close()
 
-channel.basic_consume(queue='test',on_message_callback= handleMsg)
+channel.basic_consume(queue='customer',on_message_callback= handleMsg)
 print('starting to consume...')
 channel.start_consuming()
