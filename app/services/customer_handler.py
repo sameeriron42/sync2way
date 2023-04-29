@@ -1,4 +1,4 @@
-from fastapi import HTTPException
+from fastapi import HTTPException,Request
 from sqlalchemy.orm import Session
 from app import models 
 from app.databases import db_utils
@@ -18,7 +18,7 @@ def getCustomerByEmail(email: str, db_instance: Session):
         raise HTTPException(status_code=404,detail=f"User with {email} email does not exist")
     return customer
 
-def createCustomer(customer : models.Customer, db_instance:Session, webhook:bool=False):
+def createCustomer(request:Request,customer : models.Customer, db_instance:Session, webhook:bool=False):
     db_customer = db_utils.get_user_by_email(db_instance, email=customer.email)
     if db_customer:
         raise HTTPException(status_code=404, detail="Email already registered")
@@ -26,10 +26,10 @@ def createCustomer(customer : models.Customer, db_instance:Session, webhook:bool
     record = models.Customer.from_orm(record)
     msg = {"type": "create", "data": record.dict()}
     if webhook==False:
-        publish_to_queue(msg)
+        publish_to_queue(request.app.config.queue,msg)
     return record
 
-def updateCustomer(email:str,customer:models.Customer,db_instance:Session,webhook:bool=False):
+def updateCustomer(request:Request,email:str,customer:models.Customer,db_instance:Session,webhook:bool=False):
     db_customer = db_utils.get_user_by_email(db_instance, email=email)
     if db_customer==None:
         raise HTTPException(status_code=404, detail="Customer with Email does not exist")
@@ -37,16 +37,16 @@ def updateCustomer(email:str,customer:models.Customer,db_instance:Session,webhoo
     no_of_records = db_utils.update_user(db=db_instance,email=email,customer=customer)
     msg = {"type": "update", "data": customer.dict(),"email": email}
     if webhook==False:
-        publish_to_queue(msg)
+        publish_to_queue(request.app.config.queue,msg)
     raise HTTPException(status_code=200,detail=f'updated {no_of_records} records successfully')
 
-def deleteCustomer(email:str,db_instance:Session,webhook:bool=False):
+def deleteCustomer(request:Request,email:str,db_instance:Session,webhook:bool=False):
     db_customer = db_utils.get_user_by_email(db_instance, email=email)
     if db_customer==None:
         raise HTTPException(status_code=404, detail="No Deletion,Customer with Email does not exist")
     no_of_records = db_utils.delete_user(db_instance,email)
     msg = {"type": "delete","email": email}
     if webhook==False:
-        publish_to_queue(msg)
+        publish_to_queue(request.app.config.queue,msg)
     raise HTTPException(status_code=200,detail=f'Deleted {no_of_records} records successfully')
  

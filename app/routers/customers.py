@@ -1,4 +1,4 @@
-from fastapi import APIRouter,Depends,HTTPException
+from fastapi import APIRouter,Depends,HTTPException,Request
 from sqlalchemy.orm import Session
 from app import models 
 from app.services import customer_handler
@@ -17,14 +17,14 @@ async def get_customer_by_email(email,db:Session= Depends(get_db)):
     return customer_handler.getCustomerByEmail(email,db)
 
 @router.post("/customers", response_model=models.Customer)
-async def create_customer(customer : models.Customer,db:Session = Depends(get_db)):
-    return customer_handler.createCustomer(customer,db)
+async def create_customer(request:Request,customer : models.Customer,db:Session = Depends(get_db)):
+    return customer_handler.createCustomer(request,customer,db)
 
 @router.put("/customers/{email}", response_class=HTTPException)
-async def update_customer(email:str, customer: models.Customer, db: Session = Depends(get_db)):
-    return await customer_handler.updateCustomer(email,customer,db)
+async def update_customer(request:Request,email:str, customer: models.Customer, db: Session = Depends(get_db)):
+    return await customer_handler.updateCustomer(request,email,customer,db)
 
 
 @router.delete("/customers/{email}",response_class=HTTPException)
-async def delete_customer(email:str,db:Session = Depends(get_db)):
-    return await customer_handler.deleteCustomer(email,db)
+async def delete_customer(request:Request,email:str,db:Session = Depends(get_db)):
+    return await customer_handler.deleteCustomer(request,email,db)

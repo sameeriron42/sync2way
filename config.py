@@ -6,18 +6,19 @@ class Settings(BaseSettings):
     sql_engine_uri: str
     stripe_restricted_key: str
     webhook_secret: str
-
     class Config:
         env_file = 'app/.env'
 
 class CustomerConfig(Settings):
-    customer_tablename:str
+    tablename:str
+    queue:str = "customer"
 
 class InvoiceConfig(Settings):
     pass
 
 class TestConfig(Settings):
     sql_engine_uri:str
+    queue:str = "test"
     def init(self):
         load_dotenv('app/.env')
         self.sql_engine_uri = os.getenv("TEST_SQL_ENGINE_URI")
