@@ -3,7 +3,8 @@
 The objective of this exercise is to simulate a product that you are building that has a simple
 customer catalog (think of it as a simple customer table) and build a two-way integration with a
 customer catalog in an external service - Stripe in this case.
-
+## Architecture
+![](Factory-Pattern.png)
 ## Process Flow
 ![](process-flow.png)
 
@@ -87,6 +88,10 @@ Expose the webhook server using ngrok
 - Name it as customer-hook, click create webhook. copy the WEBHOOK SECRET generated.
 
 
+### How can product's customer catalog be extended to support other systems like invoice catalog?
+- Since we follow factory pattern, we can seamlessly integrate any new category as long as we define templates such as routers,configSettings,DB models & schemas.
+- When provided with product type, Our factory function will take care of the integrations i.e, initializing appropriate configClass and registering invoice related routers,publishing msg's to respective queues etc.
+
 ### How would you go about adding second integration like salesforce?
 - All we need to do is extend the functionality of worker that we wrote for stripe integration.
 - So that when a message is received the worker makes respective api call to both stripe and salesforce with their respective SDK's.
@@ -96,12 +101,4 @@ Expose the webhook server using ngrok
 - This will take care of the outward sync part. For the inward sync instead of having single `/webhook` endpoint.
 - We will define two seperate routes `/webhook/stripe` and `/webhook/salesforce`. Add these routes in respective service dashboard when we create new webhook trigger.
 
-
-### How can product's customer catalog be extended to support other systems like invoice catalog?
-
-- For integration of systems like invoice catalog, we can take advantage of OOPs design pattern.
-- Any invoice is guaranteed to have the basic customer details that we built in customer catalog along with additional info like bill-no, amount, due etc.
-- We can take advantage of Class based views instead of functional based views and use patterns like Inheritance and Mixins.
-- In this case Invoice-catalog Class will inherit from Customer-catalog Class. Which provides ability to resuse methods and also extend functionality according to it needs.
-- Other integrations like SQL table will maintain a foriegn key to customer table. The message that we publish to the queue will have source id like "`invoice`" or "`customer`", so that our worker can act accordingly. Webhooks will maintain seperate routes for seperate systems.
 
