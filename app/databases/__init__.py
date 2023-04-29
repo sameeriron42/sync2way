@@ -1,12 +1,10 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine,Engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import declarative_base 
 
 
 
-def create_db_session(sql_uri:str):
-    sql_engine = get_sql_engine(sql_uri)
-    
+def create_db_session(sql_engine:Engine):
     #instance of this class represents database session, 
     # naming it so to distinguish from Session
     SessionLocal = sessionmaker(bind=sql_engine,autoflush=False)
