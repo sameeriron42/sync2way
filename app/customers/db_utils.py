@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from app.databases.schemas import CustomerCatalog
-from app.models import Customer
+from app.core.databases.models import CustomerCatalog
+from app.core.schemas import Customer
 
 
 def get_users(db: Session):

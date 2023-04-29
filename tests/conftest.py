@@ -2,7 +2,7 @@ import pytest
 from typing import Generator, Any
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from app.databases import Base
+from app.core.databases import Base
 from app.init_app import create_app
 
 @pytest.fixture(scope="function")

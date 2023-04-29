@@ -1,7 +1,7 @@
 from fastapi import APIRouter,Request,Depends,HTTPException
 from sqlalchemy.orm import Session
-from app.services import webhook_handler
-from app.routers import dependency
+from app.webhook import webhook_handler
+from app.core import dependency
 
 router = APIRouter()
 

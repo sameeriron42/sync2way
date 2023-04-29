@@ -1,14 +1,14 @@
 from fastapi import HTTPException,Request
 from sqlalchemy.orm import Session
-from app import models
-from app.services import customer_handler
+from app.core import schemas
+from app.customers import customer_handler
 import stripe
 import pickle
 
 
 async def stripeWebhook(request: Request,db_instance:Session):
     stripe.api_key = request.app.config.stripe_restricted_key
-    endpoint_secret = request.app.config.endpoint_secret
+    endpoint_secret = request.app.config.webhook_secret
     event = None
     payload = await request.body()
     sig_header = request.headers.get('STRIPE-SIGNATURE')
@@ -27,7 +27,8 @@ async def stripeWebhook(request: Request,db_instance:Session):
 
     #check if hook originated from worker of queue
     stripe_customer_id= event['data']['object']['id']
-    fp = open("shared.pkl","rb+")
+    fp = open("app/shared.pkl","rb+")
+
     customer_list = pickle.load(fp)
     if stripe_customer_id in customer_list:
        fp.seek(0)
@@ -41,17 +42,17 @@ async def stripeWebhook(request: Request,db_instance:Session):
     # Handle the event
     if event['type'] == 'customer.created':
       stripe_customer = event['data']['object']
-      customer = models.Customer(name=stripe_customer["name"],email=stripe_customer["email"])
-      customer_handler.createCustomer(customer,db_instance,webhook=True)
+      customer = schemas.Customer(name=stripe_customer["name"],email=stripe_customer["email"])
+      customer_handler.createCustomer(request,customer,db_instance,webhook=True)
 
     elif event['type'] == 'customer.deleted':
       stripe_customer = event['data']['object']
-      customer_handler.deleteCustomer(stripe_customer["email"],db_instance,webhook=True)
+      customer_handler.deleteCustomer(request,stripe_customer["email"],db_instance,webhook=True)
 
     elif event['type'] == 'customer.updated':
       stripe_customer = event['data']['object']
-      customer = models.Customer(name=stripe_customer["name"],email=stripe_customer["email"])
-      customer_handler.updateCustomer(stripe_customer["email"],customer,db_instance,webhook=True)
+      customer = schemas.Customer(name=stripe_customer["name"],email=stripe_customer["email"])
+      customer_handler.updateCustomer(request,stripe_customer["email"],customer,db_instance,webhook=True)
       
     else:
       raise HTTPException(status_code=404,detail=f'Invalid event type: {event["type"]}')   
