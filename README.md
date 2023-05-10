@@ -1,13 +1,16 @@
 # Two-Way-Integration
 
-The objective of this exercise is to simulate a product that you are building that has a simple
-customer catalog (think of it as a simple customer table) and build a two-way integration with a
-customer catalog in an external service - Stripe in this case.
-## Architecture
+A two-way-sync between your application and remote service. Lets say for example your application maintains details of all its users. From the application we are able to perform CRUD operations using endpoint or web interface which will reflect in our database. Now we want this changes to propagate to any remote service that we subscribed to, like Stripe(payment service platform). Similarly performing CRUD operations on the remote side ex. from Stripe dashboard, should reflexct in our application database.
+
+## Factory Pattern Architecture
 ![](Factory-Pattern.png)
 ## Process Flow
 ![](process-flow.png)
-
+- Updates made usign CRUD api is reflected on mySQL database using ORM.
+- Parallely a message payload is sent to the exchange of Queueing service(RabbitMQ).
+- Worker consumes these messages from queue and make calls to appropriate remote service API using their SDK's.
+- Updates made on remote end will trigger our webhook(we must configure which events to listen for). 
+- Webhook acts in same way as our CRUD api making changes to our DB, without publishing msg to queue.
 ## Tech Stack
 
 python | rabbitmq | fastapi | mysql
@@ -80,7 +83,8 @@ Expose the webhook server using ngrok
 ### Setup Stripe webhook
 - Navigate to stripe dashboard on test account
 - on developers->Webhook section add new webhook
-- under customer events, select 
+- under 
+events, select 
 - `customer.created`
 - `customer.update`
 - `customr.deleted`
@@ -88,9 +92,9 @@ Expose the webhook server using ngrok
 - Name it as customer-hook, click create webhook. copy the WEBHOOK SECRET generated.
 
 
-### How can product's customer catalog be extended to support other systems like invoice catalog?
+### How can application's user details be extended to support other systems like product details?
 - Since we follow factory pattern, we can seamlessly integrate any new category as long as we define templates such as routers,configSettings,DB models & schemas.
-- When provided with product type, Our factory function will take care of the integrations i.e, initializing appropriate configClass and registering invoice related routers,publishing msg's to respective queues etc.
+- When provided with system type, Our factory function will take care of the integrations i.e, initializing appropriate configClass and registering product related routers,publishing msg's to respective queues etc.
 
 ### How would you go about adding second integration like salesforce?
 - All we need to do is extend the functionality of worker that we wrote for stripe integration.
