@@ -1,6 +1,6 @@
 # Two-Way-Integration
 
-A two-way-sync between your application and remote service. Lets say for example your application maintains details of all its users. From the application we are able to perform CRUD operations using endpoint or web interface which will reflect in our database. Now we want this changes to propagate to any remote service that we subscribed to, like Stripe(payment service platform). Similarly performing CRUD operations on the remote side ex. from Stripe dashboard, should reflexct in our application database.
+A two-way-sync between your application and remote service. Lets say for example your application maintains details of all its users. From the application we are able to perform CRUD operations using endpoint or web interface which will reflect in our database. Now we want this changes to propagate to any remote service that we subscribed to, like Stripe(payment service platform). Similarly performing CRUD operations on the remote side ex. from Stripe dashboard, should reflect in our application database.
 
 ## Factory Pattern Architecture
 ![](Factory-Pattern.png)
