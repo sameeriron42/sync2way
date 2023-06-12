@@ -5,7 +5,8 @@ A two-way-sync between your application and remote service. Lets say for example
 ## Factory Pattern Architecture
 ![](Factory-Pattern.png)
 ## Process Flow
-<img src="process-flow.png">
+![process-flow](https://github.com/sameeriron42/sync2way/assets/46097924/0e7450da-1575-4eec-bab8-96b92d1d8859)
+
 - Updates made usign CRUD api is reflected on mySQL database using ORM.
 - Parallely a message payload is sent to the exchange of Queueing service(RabbitMQ).
 - Worker consumes these messages from queue and make calls to appropriate remote service API using their SDK's.
