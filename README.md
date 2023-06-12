@@ -3,7 +3,8 @@
 A two-way-sync between your application and remote service. Lets say for example your application maintains details of all its users. From the application we are able to perform CRUD operations using endpoint or web interface which will reflect in our database. Now we want this changes to propagate to any remote service that we subscribed to, like Stripe(payment service platform). Similarly performing CRUD operations on the remote side ex. from Stripe dashboard, should reflect in our application database.
 
 ## Factory Pattern Architecture
-![](Factory-Pattern.png)
+![Factory-Pattern](https://github.com/sameeriron42/sync2way/assets/46097924/0b6eb414-5bff-4312-b2fb-d54cbd250019)
+
 ## Process Flow
 ![process-flow](https://github.com/sameeriron42/sync2way/assets/46097924/0e7450da-1575-4eec-bab8-96b92d1d8859)
 
